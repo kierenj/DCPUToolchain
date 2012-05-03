@@ -58,7 +58,8 @@ int yywrap()
 }
 
 // Define our lexical token names.
-%token <token> COMMA BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT ADD
+%token <token> COMMA PAREN_OPEN PAREN_CLOSE BRACKET_OPEN BRACKET_CLOSE COLON SEMICOLON NEWLINE COMMENT
+%token <token> SYM_ADD SYM_SUB SYM_MUL SYM_DIV SYM_MOD SYM_NOT SYM_AND SYM_OR SYM_XOR
 %token <token> KEYWORD BOUNDARY EXTENSION ORIGIN INCLUDE INCBIN EXPORT IMPORT ERROR EQUATE FILL
 %token <string> WORD STRING CHARACTER
 %token <number> ADDRESS
@@ -67,6 +68,7 @@ int yywrap()
 %type <address> bracketed_added_address
 %type <address> bracketed_address
 %type <address> address
+%type <address> expression
 %type <registr> bracketed_register
 %type <registr> register
 %type <parameter> parameter
@@ -376,7 +378,16 @@ parameter:
 			$$->address = NULL;
 			$$->raw = NULL;
 			$$->prev = NULL;
-		} | 
+		} |
+		PAREN_OPEN  expression PAREN_CLOSE
+		{
+			$$ = malloc(sizeof(struct ast_node_parameter));
+			$$->type = type_address;
+			$$->registr = NULL;
+			$$->address = $2;
+			$$->raw = NULL;
+			$$->prev = NULL;
+		} |
 		bracketed_register
 		{
 			$$ = malloc(sizeof(struct ast_node_parameter));
@@ -395,24 +406,6 @@ parameter:
 			$$->raw = NULL;
 			$$->prev = NULL;
 		} |
-		bracketed_address
-		{
-			$$ = malloc(sizeof(struct ast_node_parameter));
-			$$->type = type_address;
-			$$->registr = NULL;
-			$$->address = $1;
-			$$->raw = NULL;
-			$$->prev = NULL;
-		} |
-		bracketed_added_address
-		{
-			$$ = malloc(sizeof(struct ast_node_parameter));
-			$$->type = type_address;
-			$$->registr = NULL;
-			$$->address = $1;
-			$$->raw = NULL;
-			$$->prev = NULL;
-		} |
 		STRING
 		{
 			$$ = malloc(sizeof(struct ast_node_parameter));
@@ -421,7 +414,44 @@ parameter:
 			$$->address = NULL;
 			$$->raw = $1;
 			$$->prev = NULL;
-		} ;
+		};
+
+expression:
+		address
+		{
+			$$ = $1;
+		} |
+		expression SYM_ADD expression
+		{
+		} |
+		expression SYM_SUB expression
+		{
+		} |
+		expression SYM_MUL expression
+		{
+		} |
+		expression SYM_DIV expression
+		{
+		} |
+		expression SYM_MOD expression
+		{
+		} |
+		expression SYM_AND expression
+		{
+		} |
+		expression SYM_OR expression
+		{
+		} |
+		expression SYM_XOR expression
+		{
+		} |
+		SYM_NOT expression
+		{
+		} |
+		PAREN_OPEN expression PAREN_CLOSE
+		{
+			$$ = $2;
+		};
 
 register:
 		WORD
@@ -455,6 +485,14 @@ address:
 			$$->bracketed = 0;
 			$$->added = 0;
 			$$->addcmpt = NULL;
+		} |
+		bracketed_address
+		{
+			$$ = $1;
+		} |
+		bracketed_added_address
+		{
+			$$ = $1;
 		};
 
 bracketed_address:
@@ -468,7 +506,7 @@ bracketed_address:
 		};
 
 bracketed_added_address:
-		BRACKET_OPEN ADDRESS ADD WORD BRACKET_CLOSE
+		BRACKET_OPEN ADDRESS SYM_ADD WORD BRACKET_CLOSE
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $2;
@@ -476,7 +514,7 @@ bracketed_added_address:
 			$$->added = 1;
 			$$->addcmpt = $4;
 		} |
-		BRACKET_OPEN WORD ADD ADDRESS BRACKET_CLOSE
+		BRACKET_OPEN WORD SYM_ADD ADDRESS BRACKET_CLOSE
 		{
 			$$ = malloc(sizeof(struct ast_node_address));
 			$$->value = $4;

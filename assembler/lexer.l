@@ -158,16 +158,29 @@ char* trim_and_unescape(char* data, int mode)
 
 	/* General stuff */
 
+,				return COMMA;
+\(				return PAREN_OPEN;
+\)				return PAREN_CLOSE;
+\[				return BRACKET_OPEN;
+\]				return BRACKET_CLOSE;
+\:				return COLON;
+
+\+				return SYM_ADD;
+-				return SYM_SUB;
+\*				return SYM_MUL;
+\/				return SYM_DIV;
+%				return SYM_MOD;
+~				return SYM_NOT;
+&				return SYM_AND;
+\|				return SYM_OR;
+\^				return SYM_XOR;
+
+
 [A-Za-z_-]+[A-Za-z0-9_-]*	yylval.string = strdup(yytext); return WORD;
 0x[0-9A-Fa-f]+			yylval.number = strtoul(yytext, NULL, 16); return ADDRESS;
 [0-9]+				yylval.number = strtoul(yytext, NULL, 10); return ADDRESS;
 L?'(\\.|[^\\'])+'		{ yylval.string = trim_and_unescape(strdup(yytext), 1); return CHARACTER; }
 L?\"(\\.|[^\\"])*\"		{ yylval.string = trim_and_unescape(strdup(yytext), 0); return STRING; }
-,				return COMMA;
-\[				return BRACKET_OPEN;
-\]				return BRACKET_CLOSE;
-\:				return COLON;
-\+				return ADD;
 
 \n				yyalineno++; return NEWLINE;
 \;[^\r\n]*			/* ignore comments */;
