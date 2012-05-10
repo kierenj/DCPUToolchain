@@ -17,7 +17,10 @@
 
 AsmBlock* NExpressionStatement::compile(AsmGenerator& context)
 {
-	return this->expression.compile(context);
+	AsmBlock* block = new AsmBlock();
+	*block << "; LINE " << this->line_number << std::endl;
+	return block;
+	//return this->expression.compile(context);
 }
 
 AsmBlock* NExpressionStatement::reference(AsmGenerator& context)

@@ -60,6 +60,8 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	fprintf(stderr, "Preprocessing...\n");
+
 	// Run the preprocessor.
 	ppfind_add_path(bautofree(bfromcstr(".")));
 	ppfind_add_path(bautofree(bfromcstr("include")));
@@ -72,6 +74,8 @@ int main(int argc, char* argv[])
 		pp_cleanup(bautofree(pp_result_name));
 		return 1;
 	}
+
+	fprintf(stderr, "Parsing C...\n");
 
 	// Parse C.
 	yyout = stderr;
@@ -104,6 +108,8 @@ int main(int argc, char* argv[])
 
 	// Spacing.
 	std::cerr << std::endl;
+
+	fprintf(stderr, "Generating assembly...\n");
 
 	// Generate assembly using the AST.
 	try

@@ -56,6 +56,8 @@ extern int yylex();
 extern int yycolumn;
 void yyerror(const char *str);
 
+int line_num = 1;
+
 %}
 
 %union {
@@ -337,7 +339,7 @@ stmt:
 		stmt_asm |
 		expr SEMICOLON
 		{
-			$$ = new NExpressionStatement(*$1);
+			$$ = new NExpressionStatement(line_num,*$1);
 		} ;
 
 block_or_stmt:

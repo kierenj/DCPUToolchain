@@ -37,6 +37,7 @@ extern "C" int yywrap() { return 1; }
 char* trim_and_unescape(char* data, int mode);
 int check_type();
 extern int string_return;
+extern int line_num;
 
 #define HANDLE count()
 
@@ -168,7 +169,7 @@ extern int string_return;
 
 	/* Comments and whitespace */
 
-\n					{ }
+\n					{ line_num++; }
 "//"					{ comment_line(); }
 "/*"					{ comment(); }
 [ \t]+					/* ignore whitespace */;

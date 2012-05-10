@@ -21,8 +21,9 @@ class NExpressionStatement : public NStatement
 {
 	public:
 		NExpression& expression;
-		NExpressionStatement(NExpression& expression) :
-			expression(expression), NStatement("expression") { }
+		int line_number;
+		NExpressionStatement(int line_num, NExpression& expression) :
+			line_number(line_num), expression(expression), NStatement("expression") { }
 		virtual AsmBlock* compile(AsmGenerator& context);
 		virtual AsmBlock* reference(AsmGenerator& context);
 };

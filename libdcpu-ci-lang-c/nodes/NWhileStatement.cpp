@@ -19,7 +19,7 @@
 AsmBlock* NWhileStatement::compile(AsmGenerator& context)
 {
 	AsmBlock* block = new AsmBlock();
-
+	
 	// Create label for the while statement.
 	std::string startlbl = context.getRandomLabel("while");
 	std::string endlbl = context.getRandomLabel("endwhile");
